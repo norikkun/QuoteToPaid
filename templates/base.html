@@ -1,0 +1,20 @@
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}QuoteToPaid{% endblock %}</title>
+    {% tailwind_css %}
+</head>
+<body class="min-h-screen bg-stone-950 text-stone-100 antialiased">
+    <div class="relative isolate min-h-screen overflow-hidden">
+        <div class="absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.24),_transparent_45%)]"></div>
+        <div class="absolute right-0 top-24 -z-10 h-72 w-72 rounded-full bg-amber-400/10 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -z-10 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl"></div>
+        <main class="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
