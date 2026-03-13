@@ -1,3 +1,3 @@
-from .pdf import InvoicePreviewPdfService
+from .pdf_service import InvoicePreviewPdfService
 
 __all__ = ['InvoicePreviewPdfService']

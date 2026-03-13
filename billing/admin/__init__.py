@@ -1,1 +1,1 @@
-"""Admin registrations for the billing app."""
+from .registrations import *  # noqa: F401,F403
