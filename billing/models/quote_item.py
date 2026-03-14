@@ -26,5 +26,12 @@ class QuoteItem(TimeStampedModel):
         return f'{self.quote.quote_number} / {self.description}'
 
     def save(self, *args, **kwargs):
-        self.total_amount = quantize_amount(self.quantity * self.unit_price)
+        currency = self.quote.currency if self.quote_id else 'JPY'
+        self.total_amount = quantize_amount(self.quantity * self.unit_price, currency)
         super().save(*args, **kwargs)
+        self.quote.refresh_amounts()
+
+    def delete(self, *args, **kwargs):
+        quote = self.quote
+        super().delete(*args, **kwargs)
+        quote.refresh_amounts()

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl space-y-6">
+    <header class="rounded-[2rem] border border-white/10 bg-white/5 px-6 py-6 shadow-2xl shadow-black/20 backdrop-blur sm:px-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-emerald-300">Account</p>
+        <h1 class="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">{{ page_heading }}</h1>
+        <p class="mt-3 text-sm leading-7 text-stone-300">
+            現在ログインしているご自身のアカウント情報です。必要なときはここから編集または削除できます。
+        </p>
+    </header>
+
+    <section class="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
+        <div class="grid gap-5 md:grid-cols-2">
+            <div class="rounded-3xl border border-white/10 bg-stone-900/70 p-5">
+                <p class="text-sm text-stone-400">ユーザー名</p>
+                <p class="mt-2 text-xl font-semibold text-white">{{ user_obj.username }}</p>
+            </div>
+            <div class="rounded-3xl border border-white/10 bg-stone-900/70 p-5">
+                <p class="text-sm text-stone-400">氏名</p>
+                <p class="mt-2 text-xl font-semibold text-white">{{ user_obj.get_full_name|default:'未設定' }}</p>
+            </div>
+            <div class="rounded-3xl border border-white/10 bg-stone-900/70 p-5 md:col-span-2">
+                <p class="text-sm text-stone-400">メールアドレス</p>
+                <p class="mt-2 text-xl font-semibold text-white">{{ user_obj.email|default:'未設定' }}</p>
+            </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+            <a href="{% url 'billing:user-update' %}" class="inline-flex items-center justify-center rounded-full bg-emerald-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-200">
+                編集する
+            </a>
+            <a href="{% url 'billing:user-delete' %}" class="inline-flex items-center justify-center rounded-full border border-rose-300/30 bg-rose-300/10 px-5 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-300/20">
+                ユーザーを削除
+            </a>
+        </div>
+    </section>
+</div>
+{% endblock %}

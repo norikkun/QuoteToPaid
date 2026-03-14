@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from .time_stamped_model import TimeStampedModel
 
@@ -22,3 +23,11 @@ class CompanyProfile(TimeStampedModel):
 
     def __str__(self) -> str:
         return self.name
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_default:
+            self.__class__.objects.exclude(pk=self.pk).filter(is_default=True).update(
+                is_default=False,
+                updated_at=timezone.now(),
+            )

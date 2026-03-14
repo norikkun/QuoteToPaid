@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-6xl space-y-6">
+    <header class="rounded-[2rem] border border-white/10 bg-white/5 px-6 py-6 shadow-2xl shadow-black/20 backdrop-blur sm:px-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-emerald-300">{{ page_badge }}</p>
+        <h1 class="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">{{ page_heading }}</h1>
+        <p class="mt-3 text-sm leading-7 text-stone-300">{{ page_description }}</p>
+    </header>
+
+    <section class="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
+        <form method="post" novalidate class="space-y-8">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div class="rounded-2xl border border-rose-300/30 bg-rose-300/10 px-5 py-4 text-sm text-rose-100">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <div class="grid gap-5 md:grid-cols-2">
+                {% for field in form %}
+                {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="md:col-span-2">
+                    <label for="{{ field.id_for_label }}" class="flex cursor-pointer items-center justify-between gap-4 rounded-[1.75rem] border border-white/10 bg-stone-900/60 px-5 py-4 transition hover:border-white/20 hover:bg-stone-900/70">
+                        <div class="max-w-3xl">
+                            <span class="block text-sm font-semibold text-white">{{ field.label }}</span>
+                            {% if field.help_text %}
+                            <span class="mt-2 block text-sm leading-6 text-stone-400">{{ field.help_text }}</span>
+                            {% endif %}
+                        </div>
+                        <span class="relative inline-flex shrink-0 items-center">
+                            {{ field }}
+                            <span class="block h-7 w-14 rounded-full bg-stone-700 transition peer-checked:bg-emerald-300 peer-focus:ring-2 peer-focus:ring-emerald-300/30"></span>
+                            <span class="pointer-events-none absolute left-1 top-1 h-5 w-5 rounded-full bg-white shadow-sm transition peer-checked:translate-x-7"></span>
+                        </span>
+                    </label>
+                    {% if field.errors %}
+                    <div class="mt-2 text-sm text-rose-200">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-stone-200">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <p class="mt-2 text-xs text-stone-500">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="mt-2 text-sm text-rose-200">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if item_formset %}
+            <section class="space-y-5 border-t border-white/10 pt-8" data-item-formset data-max-items="{{ item_formset_limit }}">
+                {{ item_formset.management_form }}
+
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-stone-400">Line items</p>
+                        <h2 class="mt-2 text-2xl font-semibold text-white">{{ item_formset_title }}</h2>
+                        <p class="mt-2 text-sm leading-7 text-stone-300">{{ item_formset_description }}</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="inline-flex items-center justify-center rounded-full border border-sky-300/30 bg-sky-300/10 px-4 py-2 text-sm font-semibold text-sky-100">
+                            最大 {{ item_formset_limit }} 件
+                        </span>
+                        <span class="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-stone-200" data-formset-count>
+                            {{ item_formset_initial_visible_count }} / {{ item_formset_limit }} 件を表示中
+                        </span>
+                        <button type="button" class="inline-flex items-center justify-center rounded-full bg-emerald-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-200" data-formset-add>
+                            明細を追加
+                        </button>
+                    </div>
+                </div>
+
+                {% if item_formset.non_form_errors %}
+                <div class="rounded-2xl border border-rose-300/30 bg-rose-300/10 px-5 py-4 text-sm text-rose-100">
+                    {{ item_formset.non_form_errors }}
+                </div>
+                {% endif %}
+
+                <div class="grid gap-4 xl:grid-cols-2">
+                    {% for item_form in item_formset %}
+                    <article class="rounded-[1.75rem] border border-white/10 bg-stone-900/60 p-5 {% if not item_form.is_displayed %}hidden{% endif %}" data-item-form-card data-existing="{% if item_form.instance.pk %}true{% else %}false{% endif %}">
+                        {% for hidden_field in item_form.hidden_fields %}
+                        {{ hidden_field }}
+                        {% endfor %}
+                        {% if item_form.DELETE %}
+                        <div class="hidden">{{ item_form.DELETE }}</div>
+                        {% endif %}
+                        <input type="hidden" name="{{ item_form.visibility_key }}" value="{{ item_form.visibility_value }}" data-form-visibility>
+
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">Detail row</p>
+                                <h3 class="mt-2 text-lg font-semibold text-white" data-form-row-title>明細 {{ forloop.counter }}</h3>
+                                <p class="mt-2 text-xs leading-5 text-stone-400">明細番号と表示順は自動で連動します。表示中の明細だけが帳票に反映されます。</p>
+                            </div>
+                            <button type="button" class="inline-flex items-center justify-center rounded-full border border-rose-300/30 bg-rose-300/10 px-4 py-2 text-xs font-semibold text-rose-100 transition hover:bg-rose-300/20" data-formset-remove>
+                                この明細を非表示
+                            </button>
+                        </div>
+
+                        {% if item_form.non_field_errors %}
+                        <div class="mt-4 rounded-2xl border border-rose-300/30 bg-rose-300/10 px-4 py-3 text-sm text-rose-100">
+                            {{ item_form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        <div class="mt-5 grid gap-5 md:grid-cols-2">
+                            {% for field in item_form.visible_fields %}
+                            {% if field.name != 'DELETE' %}
+                            <div>
+                                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-stone-200">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.help_text %}
+                                <p class="mt-2 text-xs text-stone-500">{{ field.help_text }}</p>
+                                {% endif %}
+                                {% if field.errors %}
+                                <div class="mt-2 text-sm text-rose-200">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-4">
+                            <p class="text-xs uppercase tracking-[0.24em] text-emerald-100/80">この明細の金額</p>
+                            <p class="mt-2 text-2xl font-semibold text-white" data-line-total>0 円</p>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+
+                <div class="rounded-[1.75rem] border border-white/10 bg-stone-900/60 p-5">
+                    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">Live summary</p>
+                            <h3 class="mt-2 text-xl font-semibold text-white">明細合計のリアルタイム表示</h3>
+                            <p class="mt-2 text-sm leading-6 text-stone-400">表示している明細の金額から、小計・消費税・合計をその場で計算します。日本円は円単位で四捨五入します。</p>
+                        </div>
+                        <div class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-stone-200">
+                            税率 <span data-formset-tax-rate>{{ form.tax_rate.value|default:'0.00' }}</span>%
+                        </div>
+                    </div>
+                    <div class="mt-5 grid gap-4 md:grid-cols-3">
+                        <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
+                            <p class="text-xs uppercase tracking-[0.24em] text-stone-400">小計</p>
+                            <p class="mt-2 text-2xl font-semibold text-white" data-formset-subtotal>0 円</p>
+                        </div>
+                        <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
+                            <p class="text-xs uppercase tracking-[0.24em] text-stone-400">消費税</p>
+                            <p class="mt-2 text-2xl font-semibold text-white" data-formset-tax-amount>0 円</p>
+                        </div>
+                        <div class="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-4">
+                            <p class="text-xs uppercase tracking-[0.24em] text-emerald-100/80">合計</p>
+                            <p class="mt-2 text-2xl font-semibold text-white" data-formset-total-amount>0 円</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <div class="flex flex-wrap gap-3 pt-2">
+                <button type="submit" class="inline-flex items-center justify-center rounded-full bg-emerald-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-200">
+                    {{ submit_label }}
+                </button>
+                <a href="{{ cancel_url }}" class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+                    キャンセル
+                </a>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'billing/js/forms/detail_formset.js' %}" defer></script>
+{% endblock %}

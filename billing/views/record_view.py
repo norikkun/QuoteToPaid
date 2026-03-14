@@ -1,4 +1,3 @@
-from .auth_view import UserLoginView, UserLogoutView, UserSetupView
 from .invoice_view import InvoiceCreateView, InvoiceDeleteView, InvoiceListView, InvoiceUpdateView
 from .master_data_view import (
     BankAccountCreateView,
@@ -14,7 +13,6 @@ from .master_data_view import (
     CompanyProfileListView,
     CompanyProfileUpdateView,
 )
-from .pages_view import DashboardTemplateView
 from .payment_view import PaymentCreateView, PaymentDeleteView, PaymentListView, PaymentUpdateView
 from .project_view import ProjectCreateView, ProjectDeleteView, ProjectListView, ProjectUpdateView
 from .quote_view import QuoteCreateView, QuoteDeleteView, QuoteListView, QuoteUpdateView
@@ -24,7 +22,6 @@ from .reminder_log_view import (
     ReminderLogListView,
     ReminderLogUpdateView,
 )
-from .user_view import UserDeleteView, UserDetailView, UserUpdateView
 
 __all__ = [
     'BankAccountCreateView',
@@ -39,7 +36,6 @@ __all__ = [
     'CompanyProfileDeleteView',
     'CompanyProfileListView',
     'CompanyProfileUpdateView',
-    'DashboardTemplateView',
     'InvoiceCreateView',
     'InvoiceDeleteView',
     'InvoiceListView',
@@ -60,10 +56,4 @@ __all__ = [
     'ReminderLogDeleteView',
     'ReminderLogListView',
     'ReminderLogUpdateView',
-    'UserDeleteView',
-    'UserDetailView',
-    'UserLoginView',
-    'UserLogoutView',
-    'UserSetupView',
-    'UserUpdateView',
 ]

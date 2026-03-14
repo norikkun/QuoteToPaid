@@ -64,18 +64,18 @@ class Invoice(TimeStampedModel):
             (payment.amount for payment in self.payments.filter(status=PaymentStatus.RECEIVED)),
             ZERO_DECIMAL,
         )
-        return quantize_amount(paid_total)
+        return quantize_amount(paid_total, self.currency)
 
     @property
     def outstanding_amount(self) -> Decimal:
-        return quantize_amount(max(self.total_amount - self.paid_amount, ZERO_DECIMAL))
+        return quantize_amount(max(self.total_amount - self.paid_amount, ZERO_DECIMAL), self.currency)
 
     def refresh_amounts(self, save: bool = True) -> None:
         subtotal = sum((item.total_amount for item in self.items.all()), ZERO_DECIMAL)
-        subtotal = quantize_amount(subtotal)
-        tax = quantize_amount(subtotal * (self.tax_rate / Decimal('100')))
+        subtotal = quantize_amount(subtotal, self.currency)
+        tax = quantize_amount(subtotal * (self.tax_rate / Decimal('100')), self.currency)
         self.subtotal_amount = subtotal
         self.tax_amount = tax
-        self.total_amount = quantize_amount(subtotal + tax)
+        self.total_amount = quantize_amount(subtotal + tax, self.currency)
         if save:
             self.save(update_fields=['subtotal_amount', 'tax_amount', 'total_amount', 'updated_at'])

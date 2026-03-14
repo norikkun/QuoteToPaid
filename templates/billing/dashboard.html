@@ -10,123 +10,113 @@
                 <p class="text-xs font-semibold uppercase tracking-[0.32em] text-emerald-300">Freelance cashflow cockpit</p>
                 <h1 class="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">{{ project_name }}</h1>
                 <p class="mt-4 max-w-2xl text-sm leading-7 text-stone-300 sm:text-base">
-                    見積の作成から請求、入金確認、未払いフォローまでを一気通貫で管理するための最初のダッシュボードです。
-                    Tailwind を使って、これから画面を育てやすい土台に寄せています。
+                    1件の取引先登録から案件、見積、請求、入金までの順番が一目で追えるダッシュボードです。
+                    まず何を登録すべきか、次にどの画面へ進むべきかを上から順に確認できます。
                 </p>
             </div>
 
-            <div class="grid gap-3 sm:grid-cols-3 lg:min-w-[34rem]">
-                <a href="/admin/" class="inline-flex items-center justify-center rounded-full bg-emerald-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-200">
-                    Django Admin を開く
-                </a>
-                <a href="/health/" class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
-                    Healthcheck を確認
-                </a>
-                <a href="{% url 'billing:pdf-preview' %}" class="inline-flex items-center justify-center rounded-full border border-sky-300/30 bg-sky-300/15 px-5 py-3 text-sm font-semibold text-sky-100 transition hover:bg-sky-300/25">
-                    PDF Preview を開く
+            <div class="flex flex-wrap gap-3">
+                <a href="{% url 'billing:user-detail' %}" class="inline-flex items-center justify-center rounded-full bg-emerald-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-emerald-200">
+                    アカウント設定
                 </a>
             </div>
         </div>
     </header>
 
-    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <article class="rounded-3xl border border-emerald-300/20 bg-emerald-300/10 p-5">
-            <p class="text-sm text-emerald-200">今月の見積</p>
-            <p class="mt-3 text-3xl font-semibold text-white">12</p>
-            <p class="mt-2 text-sm text-stone-300">提出済み 8件 / 下書き 4件</p>
-        </article>
-        <article class="rounded-3xl border border-sky-300/20 bg-sky-300/10 p-5">
-            <p class="text-sm text-sky-200">請求待ち案件</p>
-            <p class="mt-3 text-3xl font-semibold text-white">5</p>
-            <p class="mt-2 text-sm text-stone-300">見積承認後に請求書作成が必要</p>
-        </article>
-        <article class="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-5">
-            <p class="text-sm text-amber-200">入金待ち</p>
-            <p class="mt-3 text-3xl font-semibold text-white">3</p>
-            <p class="mt-2 text-sm text-stone-300">期日超過 1件 / 今週期限 2件</p>
-        </article>
-        <article class="rounded-3xl border border-rose-300/20 bg-rose-300/10 p-5">
-            <p class="text-sm text-rose-200">催促が必要</p>
-            <p class="mt-3 text-3xl font-semibold text-white">1</p>
-            <p class="mt-2 text-sm text-stone-300">次回の自動通知文面を準備できます</p>
-        </article>
+    <section class="rounded-[2rem] border border-emerald-300/20 bg-emerald-300/10 p-6 shadow-lg shadow-emerald-950/10">
+        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-emerald-200">Next action</p>
+        <h2 class="mt-3 text-2xl font-semibold text-white">次にやること</h2>
+        <p class="mt-3 max-w-4xl text-sm leading-7 text-emerald-50/90">{{ next_action }}</p>
     </section>
 
-    <section class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <article class="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
-            <div class="flex items-center justify-between gap-4">
-                <div>
-                    <p class="text-sm font-medium text-stone-400">Workflow</p>
-                    <h2 class="mt-1 text-2xl font-semibold text-white">業務フロー</h2>
+    <section class="space-y-4">
+        <div>
+            <p class="text-sm font-medium text-stone-400">Workflow</p>
+            <h2 class="mt-2 text-2xl font-semibold text-white">取引先登録から入金までの最短フロー</h2>
+        </div>
+
+        <div class="grid gap-4 xl:grid-cols-5">
+            {% for step in workflow_steps %}
+            <article class="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">Step {{ step.step }}</p>
+                        <h3 class="mt-2 text-xl font-semibold text-white">{{ step.title }}</h3>
+                    </div>
+                    <span class="rounded-full border px-3 py-1 text-xs font-semibold
+                        {% if step.status_tone == 'emerald' %}border-emerald-300/30 bg-emerald-300/10 text-emerald-200{% endif %}
+                        {% if step.status_tone == 'sky' %}border-sky-300/30 bg-sky-300/10 text-sky-200{% endif %}
+                        {% if step.status_tone == 'amber' %}border-amber-300/30 bg-amber-300/10 text-amber-200{% endif %}
+                    ">
+                        {{ step.status }}
+                    </span>
                 </div>
-                <span class="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
-                    Ready
-                </span>
-            </div>
 
-            <ol class="mt-6 grid gap-4 md:grid-cols-2">
-                <li class="rounded-3xl border border-white/10 bg-stone-900/70 p-5">
-                    <p class="text-xs uppercase tracking-[0.24em] text-stone-500">01 Quote</p>
-                    <h3 class="mt-3 text-lg font-semibold text-white">見積作成</h3>
-                    <p class="mt-2 text-sm leading-6 text-stone-300">案件単位で見積番号、取引先、期限、金額を管理する入口です。</p>
-                </li>
-                <li class="rounded-3xl border border-white/10 bg-stone-900/70 p-5">
-                    <p class="text-xs uppercase tracking-[0.24em] text-stone-500">02 Invoice</p>
-                    <h3 class="mt-3 text-lg font-semibold text-white">請求書発行</h3>
-                    <p class="mt-2 text-sm leading-6 text-stone-300">承認済み見積から請求書を発行し、支払期日を追跡します。</p>
-                </li>
-                <li class="rounded-3xl border border-white/10 bg-stone-900/70 p-5">
-                    <p class="text-xs uppercase tracking-[0.24em] text-stone-500">03 Payment</p>
-                    <h3 class="mt-3 text-lg font-semibold text-white">入金確認</h3>
-                    <p class="mt-2 text-sm leading-6 text-stone-300">入金日、金額、差額を残してキャッシュフローを可視化します。</p>
-                </li>
-                <li class="rounded-3xl border border-white/10 bg-stone-900/70 p-5">
-                    <p class="text-xs uppercase tracking-[0.24em] text-stone-500">04 Follow-up</p>
-                    <h3 class="mt-3 text-lg font-semibold text-white">催促管理</h3>
-                    <p class="mt-2 text-sm leading-6 text-stone-300">通知履歴と次回送付候補日をまとめて、催促の属人化を減らします。</p>
-                </li>
-            </ol>
-        </article>
+                <p class="mt-4 text-sm leading-7 text-stone-300">{{ step.description }}</p>
+                <p class="mt-4 text-sm font-semibold text-white">{{ step.summary }}</p>
 
-        <aside class="space-y-6">
-            <article class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-emerald-300/15 via-transparent to-sky-300/15 p-6">
-                <p class="text-sm font-medium text-stone-300">Next implementation</p>
-                <h2 class="mt-2 text-2xl font-semibold text-white">次に作ると流れが繋がるもの</h2>
-                <ul class="mt-5 space-y-3 text-sm leading-6 text-stone-300">
-                    <li class="flex gap-3">
-                        <span class="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
-                        <span>取引先 Client モデル</span>
-                    </li>
-                    <li class="flex gap-3">
-                        <span class="mt-1 h-2.5 w-2.5 rounded-full bg-sky-300"></span>
-                        <span>見積 Quote と明細 QuoteItem</span>
-                    </li>
-                    <li class="flex gap-3">
-                        <span class="mt-1 h-2.5 w-2.5 rounded-full bg-amber-300"></span>
-                        <span>請求 Invoice と入金 Payment</span>
-                    </li>
-                    <li class="flex gap-3">
-                        <span class="mt-1 h-2.5 w-2.5 rounded-full bg-rose-300"></span>
-                        <span>催促履歴 ReminderLog</span>
-                    </li>
-                </ul>
+                <div class="mt-5 flex flex-col gap-3">
+                    <a href="{{ step.primary_url }}" class="inline-flex items-center justify-center rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-stone-950 transition hover:bg-stone-200">
+                        {{ step.primary_label }}
+                    </a>
+                    <a href="{{ step.secondary_url }}" class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
+                        {{ step.secondary_label }}
+                    </a>
+                </div>
             </article>
+            {% endfor %}
+        </div>
+    </section>
 
+    <section class="space-y-4 pt-2">
+        <div>
+            <p class="text-sm font-medium text-stone-400">Data groups</p>
+            <h2 class="mt-2 text-2xl font-semibold text-white">管理テーブルの分類</h2>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {% for section in dashboard_sections %}
             <article class="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
-                <p class="text-sm font-medium text-stone-400">Template structure</p>
-                <div class="mt-4 space-y-4 text-sm text-stone-300">
-                    <div class="rounded-2xl border border-white/10 bg-stone-900/70 p-4">
-                        <p class="font-semibold text-white">templates/base.html</p>
-                        <p class="mt-1">共通レイアウト。Tailwind の読み込み元です。</p>
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-sm font-medium text-stone-400">Dashboard section</p>
+                        <h3 class="mt-2 text-2xl font-semibold text-white">{{ section.title }}</h3>
                     </div>
-                    <div class="rounded-2xl border border-white/10 bg-stone-900/70 p-4">
-                        <p class="font-semibold text-white">templates/billing/dashboard.html</p>
-                        <p class="mt-1">このダッシュボード画面。今の装飾はここで付けています。</p>
-                    </div>
+                    <span class="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]
+                        {% if section.accent == 'emerald' %}border-emerald-300/30 bg-emerald-300/10 text-emerald-200{% endif %}
+                        {% if section.accent == 'sky' %}border-sky-300/30 bg-sky-300/10 text-sky-200{% endif %}
+                        {% if section.accent == 'amber' %}border-amber-300/30 bg-amber-300/10 text-amber-200{% endif %}
+                        {% if section.accent == 'rose' %}border-rose-300/30 bg-rose-300/10 text-rose-200{% endif %}
+                    ">
+                        {{ section.items|length }}項目
+                    </span>
+                </div>
+
+                <p class="mt-4 text-sm leading-7 text-stone-300">{{ section.description }}</p>
+
+                <div class="mt-6 space-y-3">
+                    {% for item in section.items %}
+                    <a href="{{ item.url }}" class="flex items-center justify-between rounded-3xl border border-white/10 bg-stone-900/70 px-5 py-4 transition hover:border-white/20 hover:bg-stone-900">
+                        <div>
+                            <p class="text-base font-semibold text-white">{{ item.label }}</p>
+                            <p class="mt-1 text-xs uppercase tracking-[0.24em] text-stone-500">List</p>
+                            {% if item.note %}
+                            <p class="mt-2 text-xs leading-5 text-stone-400">{{ item.note }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center">
+                            <p class="text-xs uppercase tracking-[0.24em] text-stone-400">件数</p>
+                            <p class="mt-1 text-2xl font-semibold text-white">{{ item.count }}</p>
+                            {% if item.meta %}
+                            <p class="mt-1 text-xs text-stone-400">{{ item.meta }}</p>
+                            {% endif %}
+                        </div>
+                    </a>
+                    {% endfor %}
                 </div>
             </article>
-        </aside>
+            {% endfor %}
+        </div>
     </section>
 </div>
 {% endblock %}
-

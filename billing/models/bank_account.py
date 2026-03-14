@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from .choices import BankAccountType
 from .company_profile import CompanyProfile
@@ -27,3 +28,14 @@ class BankAccount(TimeStampedModel):
 
     def __str__(self) -> str:
         return f'{self.company_profile.name} / {self.nickname}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.is_default:
+            self.__class__.objects.exclude(pk=self.pk).filter(
+                company_profile=self.company_profile,
+                is_default=True,
+            ).update(
+                is_default=False,
+                updated_at=timezone.now(),
+            )

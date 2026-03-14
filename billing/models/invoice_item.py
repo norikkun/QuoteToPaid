@@ -28,5 +28,12 @@ class InvoiceItem(TimeStampedModel):
         return f'{self.invoice.invoice_number} / {self.description}'
 
     def save(self, *args, **kwargs):
-        self.total_amount = quantize_amount(self.quantity * self.unit_price)
+        currency = self.invoice.currency if self.invoice_id else 'JPY'
+        self.total_amount = quantize_amount(self.quantity * self.unit_price, currency)
         super().save(*args, **kwargs)
+        self.invoice.refresh_amounts()
+
+    def delete(self, *args, **kwargs):
+        invoice = self.invoice
+        super().delete(*args, **kwargs)
+        invoice.refresh_amounts()
